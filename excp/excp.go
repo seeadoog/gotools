@@ -135,6 +135,4 @@ func (w WithStack) Error() string {
 	return w.E.Error()
 }
 
-func WithStackError(e error) {
 
-}
