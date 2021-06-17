@@ -5,6 +5,40 @@ import (
 	"runtime/debug"
 )
 
+func TryR(f func())(res error){
+	p := &res
+	defer func() {
+		if err := recover(); err != nil {
+			switch e := err.(type) {
+			case error:
+				*p = e
+			default:
+				*p = NewDefaultError(err)
+			}
+		}
+	}()
+	f()
+	return res
+}
+
+func TryRWithStack(f func())(res error,stack []byte){
+	p := &res
+	ps := &stack
+	defer func() {
+		if err := recover(); err != nil {
+			*ps = debug.Stack()
+			switch e := err.(type) {
+			case error:
+				*p = e
+			default:
+				*p = NewDefaultError(err)
+			}
+		}
+	}()
+	f()
+	return
+}
+
 func Try(f func(), exception *error) {
 	if exception == nil {
 		panic("exception is nil")
@@ -22,9 +56,12 @@ func Try(f func(), exception *error) {
 	f()
 }
 
-func TryWithStack(f func(), exception *error,stack *[]byte) {
+func TryWithStack(f func(), exception *error, stack *[]byte) {
 	if exception == nil {
 		panic("exception is nil")
+	}
+	if stack == nil {
+		panic("stack is nil")
 	}
 	defer func() {
 		if err := recover(); err != nil {
@@ -39,9 +76,6 @@ func TryWithStack(f func(), exception *error,stack *[]byte) {
 	}()
 	f()
 }
-
-
-
 
 func TryCatch(try func(), catch func(err error)) {
 	defer func() {
@@ -62,18 +96,19 @@ func TryCatchWithStack(try func(), catch func(err error, stack []byte)) {
 		if err := recover(); err != nil {
 			switch e := err.(type) {
 			case error:
-				catch(e,debug.Stack())
+				catch(e, debug.Stack())
 			default:
-				catch(NewDefaultError(err),debug.Stack())
+				catch(NewDefaultError(err), debug.Stack())
 			}
 		}
 	}()
 	try()
 }
 
-
-
 func Throw(e error) {
+	if e == nil{
+		return
+	}
 	panic(e)
 }
 

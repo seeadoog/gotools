@@ -2,6 +2,7 @@ package goutils
 
 import (
 	"fmt"
+	"github.com/seeadoog/goutils/excp"
 	"strconv"
 	"strings"
 )
@@ -32,7 +33,17 @@ func ParseRangeIpss(ips []string) ([]string, error) {
 	return res, nil
 }
 
-
+func MustParseRageIps(ips ...string)[]string{
+	res := make([]string, 0, len(ips))
+	for _, ip := range ips {
+		v, err := ParseRangeIps(ip)
+		if err != nil {
+			excp.Throw(err)
+		}
+		res = append(res, v...)
+	}
+	return res
+}
 
 //解析简写格式的ip地址范围 10.1.87.{69...79}:{8080...8081}
 func ParseRangeIps(ips string) ([]string, error) {

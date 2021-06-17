@@ -2,6 +2,7 @@ package goutils
 
 import (
 	"fmt"
+	"github.com/seeadoog/goutils/excp"
 	"reflect"
 	"strconv"
 )
@@ -12,6 +13,14 @@ func BindFromInterface(v interface{}, m interface{}) error {
 		panic("tpye must be ptr not :" + vv.Type().String())
 	}
 	return bindFromMap(vv, m, "")
+}
+
+func MustBindFromInterface(v interface{}, m interface{}) {
+	err := BindFromInterface(v, m)
+	if err != nil {
+		excp.Throw(err)
+	}
+
 }
 
 func bindFromMap(v reflect.Value, m interface{}, path string) (err error) {
@@ -182,13 +191,13 @@ func I2Int(i interface{}) (res int, err error) {
 	case int:
 		res = v
 	case float64:
-		if v != float64(int(v)){
-			return 0,fmt.Errorf("%v is not int",v)
+		if v != float64(int(v)) {
+			return 0, fmt.Errorf("%v is not int", v)
 		}
 		res = int(v)
 	case float32:
-		if v != float32(int(v)){
-			return 0,fmt.Errorf("%v is not int",v)
+		if v != float32(int(v)) {
+			return 0, fmt.Errorf("%v is not int", v)
 		}
 		res = int(v)
 	case int64:
@@ -196,9 +205,9 @@ func I2Int(i interface{}) (res int, err error) {
 	case string:
 		res, err = strconv.Atoi(v)
 	case bool:
-		if v{
+		if v {
 			res = 1
-		}else{
+		} else {
 			res = 0
 		}
 	case uint64:
@@ -206,17 +215,25 @@ func I2Int(i interface{}) (res int, err error) {
 	case uint:
 		res = int(v)
 	default:
-		return 0,fmt.Errorf("val is not int:%v",i)
+		return 0, fmt.Errorf("val is not int:%v", i)
 	}
 	return
 }
 
-func I2Bool(i interface{})(res bool,err error){
+func MustI2Int(i interface{}) int {
+	v, err := I2Int(i)
+	if err != nil {
+		excp.Throw(err)
+	}
+	return v
+}
+
+func I2Bool(i interface{}) (res bool, err error) {
 	switch v := i.(type) {
 	case bool:
 		res = v
 	case string:
-		res,err = strconv.ParseBool(v)
+		res, err = strconv.ParseBool(v)
 	case int:
 		res = v > 0
 	case float64:
@@ -227,7 +244,15 @@ func I2Bool(i interface{})(res bool,err error){
 		res = v > 0
 	case float32:
 		res = v > 0
-		return false,fmt.Errorf("val is not bool:%v",i)
+		return false, fmt.Errorf("val is not bool:%v", i)
 	}
 	return
+}
+
+func MustI2Bool(i interface{}) bool {
+	b, err := I2Bool(i)
+	if err != nil {
+		excp.Throw(err)
+	}
+	return b
 }

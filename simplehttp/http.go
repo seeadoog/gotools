@@ -23,6 +23,14 @@ func New() *Request {
 	return &Request{}
 }
 
+func GET() *Request {
+	return New().GET()
+}
+
+func POST() *Request {
+	return New().POST()
+}
+
 func (r *Request) GET() *Request {
 	r.Method("GET")
 	return r
@@ -142,4 +150,8 @@ func (r *Response) WriteTo(w io.Writer) *Response {
 		throw(ResponseWriteError, err.Error())
 	}
 	return r
+}
+
+func (r *Response) Header(key string) string {
+	return r.rsp.Header.Get(key)
 }

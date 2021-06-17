@@ -10,6 +10,7 @@ var (
 	TryCatch          = excp.TryCatch
 	TryCatchWithStack = excp.TryCatchWithStack
 	TryWithStack      = excp.TryWithStack
+	TryR              = excp.TryR
 )
 
 type ErrorType int
@@ -23,7 +24,7 @@ const (
 	ResponseWriteError
 )
 
-//go:generate stringer -type=ErrorType
+//go:generate stringer -type=ErrorType -output error_string.go
 type Error struct {
 	Type    ErrorType
 	Message string

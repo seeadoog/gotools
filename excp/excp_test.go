@@ -1,6 +1,7 @@
 package excp
 
 import (
+	"errors"
 	"fmt"
 	"testing"
 )
@@ -78,4 +79,29 @@ func TestTryCatchWithStack(t *testing.T) {
 
 func testfunc(){
 	panic("gg")
+}
+
+func TestTr(t *testing.T) {
+	err := TryR(func() {
+		Throw(errors.New("hello "))
+	})
+	if err != nil{
+		fmt.Println("err is: ",err)
+	}
+
+	TryCatch(func() {
+
+	},
+	func(err error) {
+
+	})
+}
+
+func TestStack(t *testing.T) {
+	err,stack := TryRWithStack(func() {
+		testfunc()
+	})
+	if err != nil{
+		fmt.Println(err,string(stack))
+	}
 }
