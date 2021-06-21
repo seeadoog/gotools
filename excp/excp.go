@@ -6,14 +6,14 @@ import (
 )
 
 func TryR(f func())(res error){
-	p := &res
 	defer func() {
 		if err := recover(); err != nil {
 			switch e := err.(type) {
 			case error:
-				*p = e
+				res = e
 			default:
-				*p = NewDefaultError(err)
+				//*p = NewDefaultError(err)
+				panic(err)  // only recover error
 			}
 		}
 	}()
@@ -22,16 +22,14 @@ func TryR(f func())(res error){
 }
 
 func TryRWithStack(f func())(res error,stack []byte){
-	p := &res
-	ps := &stack
 	defer func() {
 		if err := recover(); err != nil {
-			*ps = debug.Stack()
+			stack = debug.Stack()
 			switch e := err.(type) {
 			case error:
-				*p = e
+				res = e
 			default:
-				*p = NewDefaultError(err)
+				res = NewDefaultError(err)
 			}
 		}
 	}()
@@ -90,6 +88,8 @@ func TryCatch(try func(), catch func(err error)) {
 	}()
 	try()
 }
+
+
 
 func TryCatchWithStack(try func(), catch func(err error, stack []byte)) {
 	defer func() {
