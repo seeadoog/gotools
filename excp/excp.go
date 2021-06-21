@@ -12,8 +12,8 @@ func TryR(f func())(res error){
 			case error:
 				res = e
 			default:
-				//*p = NewDefaultError(err)
-				panic(err)  // only recover error
+				res = NewDefaultError(err)
+				//panic(err)  // only recover error
 			}
 		}
 	}()

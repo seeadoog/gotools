@@ -1,6 +1,7 @@
 package highmap
 
 import (
+	"fmt"
 	"math"
 	"strings"
 )
@@ -38,6 +39,10 @@ type Val struct {
 	Key string
 	V interface{}
 	Tags []Tag
+}
+
+func (v Val) String() string {
+	return fmt.Sprintf("key=%s,v=%v,tags=%v",v.Key,v.V,v.Tags)
 }
 
 type HighMap struct {

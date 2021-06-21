@@ -22,6 +22,17 @@ func Atoi(s string) int {
 	return v
 }
 
+
+
+func ParseFloat(f string)float64{
+	r ,err := strconv.ParseFloat(f,64)
+	if err != nil{
+		throw(err)
+	}
+	return r
+}
+
+
 // func a(s string)(i int)
 /*
 	var err error
