@@ -12,7 +12,7 @@ func TestRequest_Do(t *testing.T) {
 	var res string
 	var err error
 	Try(func() {
-		res = New().GET().Url("http://10.1.87.69:8805/idcs").Do().Text()
+		res = New().GET().Urls("http://10.1.87.69:8805/idcs","http://10.1.87.69:8806/idcs").Do().Text()
 	}, &err)
 	if err != nil{
 		switch e := err.(type) {
@@ -25,25 +25,7 @@ func TestRequest_Do(t *testing.T) {
 	}
 }
 
-func TestDo2(t *testing.T) {
-	var res string
-	TryCatchWithStack(func() {
-		res = New().GET().Url("http://10.1.87.69:8808/idcs").Do().Text()
-	}, func(err error,stack []byte) {
-		fmt.Println("do request error:",err,string(stack))
-	})
 
-	fmt.Println(res)
-}
-
-func BenchmarkCatch(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		var err error
-		Try(func() {
-
-		},&err)
-	}
-}
 
 func TestT2(t *testing.T) {
 	var err error

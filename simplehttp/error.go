@@ -22,6 +22,7 @@ const (
 	ResponseReadBodyError
 	ResponseUnmarshalError
 	ResponseWriteError
+	InvalidRetryNumber
 )
 
 //go:generate stringer -type=ErrorType -output error_string.go
@@ -43,4 +44,8 @@ func NewError(t ErrorType, msg string) error {
 
 func throw(t ErrorType, msg string) {
 	excp.Throw(NewError(t, msg))
+}
+
+func throwError(err error){
+	excp.Throw(err)
 }

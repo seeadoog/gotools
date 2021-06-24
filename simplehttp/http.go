@@ -13,7 +13,7 @@ import (
 
 type Request struct {
 	method  string
-	url     string
+	urls     []string
 	headers map[string]string
 	body    io.Reader
 	timeout time.Duration
@@ -56,8 +56,8 @@ func (r *Request) Method(method string) *Request {
 	return r
 }
 
-func (r *Request) Url(url string) *Request {
-	r.url = url
+func (r *Request) Urls(url ...string) *Request {
+	r.urls = append(r.urls,url...)
 	return r
 }
 
@@ -94,12 +94,12 @@ func (r *Request) Body(body interface{}) *Request {
 	return r
 }
 
-func (r *Request) Do() *Response {
+func (r *Request) do(url string) *Response {
 	ctx := context.Background()
 	if r.timeout > 0 {
 		ctx, _ = context.WithTimeout(ctx, r.timeout)
 	}
-	req, err := http.NewRequestWithContext(ctx, r.method, r.url, r.body)
+	req, err := http.NewRequestWithContext(ctx, r.method, url, r.body)
 	if err != nil {
 		throw(CreateRequestError, err.Error())
 	}
@@ -107,8 +107,40 @@ func (r *Request) Do() *Response {
 	if err != nil {
 		throw(DoRequestError, err.Error())
 	}
-
 	return &Response{rsp: rsp}
+}
+
+
+func (r *Request) Do() (resp *Response ){
+	var err error
+	for _, url := range r.urls {
+		err = TryR(func() {
+			resp = r.do(url)
+		})
+		if err == nil{
+			return
+		}
+	}
+	throwError(err)
+	return
+}
+
+func (r *Request) DoWithRetry(retry int) *Response {
+	if retry < 0 {
+		throw(InvalidRetryNumber, "retry should be lager than 0")
+	}
+	var err error
+	var resp *Response
+	for i := 0; i <= retry; i++ {
+		err = TryR(func() {
+			resp = r.Do()
+		})
+		if err == nil {
+			return resp
+		}
+	}
+	throwError(err)
+	return nil
 }
 
 type Response struct {
